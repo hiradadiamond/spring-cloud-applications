@@ -1,5 +1,6 @@
 package miu.edu.cs.cs544.service;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import miu.edu.cs.cs544.domain.CountryRegion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +9,7 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,6 +24,8 @@ public class CountryRegionService {
     @Value("${spring-boot-server.name}")
     private String serverName;
 
+
+    @HystrixCommand(fallbackMethod = "findByIdFallback")
     public CountryRegion findById(String countryCode) {
         String url = getBaseServiceUrl() + "/countries/" + countryCode;
         return restTemplate
@@ -29,12 +33,22 @@ public class CountryRegionService {
                         CountryRegion.class);
     }
 
+    public CountryRegion findByIdFallback(String countryCode) {
+        System.out.println("Inside findByIdFallback()");
+        return new CountryRegion();
+    }
+
+    @HystrixCommand(fallbackMethod = "findAllFallback2")
     public List<CountryRegion> findAll() {
         CountryRegion[] countries = restTemplate
                 .getForObject(getBaseServiceUrl() + "/countries",
                         CountryRegion[].class);
 
         return Arrays.asList(countries);
+    }
+    public List<CountryRegion>findAllFallback2(){
+        System.out.println("Inside fallback2 method");
+        return new ArrayList<>();
     }
 
     private String getBaseServiceUrl() {
