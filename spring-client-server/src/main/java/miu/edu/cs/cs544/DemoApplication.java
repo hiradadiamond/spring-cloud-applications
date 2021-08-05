@@ -5,12 +5,14 @@ import miu.edu.cs.cs544.domain.CountryRegion;
 import miu.edu.cs.cs544.service.CountryRegionService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+@EnableCircuitBreaker
 @SpringBootApplication
 public class DemoApplication {
 
